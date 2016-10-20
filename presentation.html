@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Data manipulations</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
+      .remark-inline-code { 
+        padding: .2em;
+        margin: 0;
+        font-size: .9em;
+        background-color: #f7f7f7;
+      }
+      em {
+        font-size: .9em
+      }
+
+      a { color: blue; text-decoration: none; }
+
+      .two-column {
+        display: flex;
+      }
+
+      .two-column > * {
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+      class: center, middle
+
+      # React application lifecycle
+
+      ---
+      class: middle, center
+      <img src="components-tree.png" style="width: 100%" />
+      ---
+      class: middle
+      #React + JSX
+
+      ```html
+        <Modal>
+          <ModalHeader>
+            <ModalTitle>Modal title</ModalTitle>
+          </ModalHeader>
+
+          <ModalBody>
+            One fine body...
+          </ModalBody>
+
+          <ModalFooter>
+            <Button>Close</Button>
+            <Button type="primary">Save changes</Button>
+          </ModalFooter>
+
+        </Modal>
+      ```
+      ---
+      class: middle
+      #HTML
+
+      ```html
+      <div class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Название модали</h4>
+            </div>
+            <div class="modal-body">
+              <p>One fine body&hellip;</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+              <button type="button" class="btn btn-primary">Сохранить изменения</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+      ```
+
+      ---
+
+      #Birth / Mounting
+
+      1. Initialize / Construction
+      
+
+      ---
+
+      #Birth / Mounting
+
+      1. Initialize / Construction
+      2. `getDefaultProps()` *(React.createClass)* or `MyComponent.defaultProps` *(ES6 class)*
+      
+      ---
+      # Component props
+
+      ```javascript
+      import Cowboy from 'react';
+
+      export default class Person extends React.Component {
+        render() {
+          return (
+            <div>{ this.props.name } (weapon: { this.props.weapon })</div>
+          );
+        }
+      }
+      ```
+      ```javascript
+        <Person name="Clint Eastwood" weapon="Colt 45" />
+      ```
+      ```html
+        <div>Clint Eastwood (weapon: Colt 45)</div>
+      ```
+
+      ---
+      # `getDefaultProps()`
+
+      ```javascript
+      import React from 'react';
+
+      class Cowboy extends React.Component {
+        render() {
+          return (
+            <div>{ this.props.name } (weapon: { this.props.weapon })</div>
+          );
+        }
+      }
+
+      Person.defaultProps = { name: 'Gringo', weapon: 'unknown' };
+
+      ```
+      ```javascript
+        <Person name="Clint Eastwood" />
+      ```
+      ```html
+        <div>Clint Eastwood (weapon: unknown)</div>
+      ```
+
+      ---
+      # For react null is value
+
+      ```javascript
+        <Person name="Clint Eastwood" weapon={ null } />
+      ```
+      ```html
+        <div>Clint Eastwood (weapon:)</div>
+      ```
+
+      ---
+      
+      #Birth / Mounting
+
+      1. Initialize / Construction
+      2. `getDefaultProps()` *(React.createClass)* or `MyComponent.defaultProps` *(ES6 class)*
+      3. `getInitialState()` *(React.createClass)* or `this.state = ...` *(ES6 constructor)*
+      
+      ---
+
+      # React state
+
+      ```javascript
+      import React from 'react';
+
+      class Cowboy extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { isDead: false } ;
+        }
+        kill() {
+          this.setState({ isDead: true }); 
+        }
+        render() {
+          return (
+            <div>
+              {this.state.isDead ? 
+                  "(RIP)" : 
+                  <button onClick={() => { this.kill()}}>Kill</button>}
+              { this.props.name } (weapon: { this.props.weapon })</div>
+          );
+        }
+      }
+
+      Person.defaultProps = { name: 'Gringo', weapon: 'unknown' };
+
+      ```
+
+      # React state
+
+      ```javascript
+      import React from 'react';
+
+      class Cowboy extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { isDead: false } ;
+        }
+        kill() {
+          this.setState({ isDead: true }); 
+        }
+        render() {
+          return (
+            <div>
+              {this.state.isDead ? 
+                  "(RIP)" : 
+                  <button onClick={() => { this.kill()}}>Kill</button>}
+              { this.props.name } (weapon: { this.props.weapon })
+            </div>
+          );
+        }
+      }
+
+      Person.defaultProps = { name: 'Gringo', weapon: 'unknown' };
+
+      ```
+
+      # `setState` is asynchronous
+
+      ```javascript
+      import React from 'react';
+
+      class Cowboy extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { isDead: false } ;
+        }
+        kill() {
+          this.setState({ isDead: true });
+          this.state.isDead; // false
+        }
+        render() {
+          return (
+            <div>
+              {this.state.isDead ? 
+                  "(RIP)" : 
+                  <button onClick={() => { this.kill()}}>Kill</button>}
+              { this.props.name } (weapon: { this.props.weapon })
+            </div>
+          );
+        }
+      }
+
+      Person.defaultProps = { name: 'Gringo', weapon: 'unknown' };
+
+      ```
+      #Birth / Mounting
+
+      1. Initialize / Construction
+      2. `getDefaultProps()` *(React.createClass)* or `MyComponent.defaultProps` *(ES6 class)*
+      3. `getInitialState()` *(React.createClass)* or `this.state = ...` *(ES6 constructor)*
+      4. `componentWillMount()`
+
+      ---
+
+      #Birth / Mounting
+
+      1. Initialize / Construction
+      2. `getDefaultProps()` *(React.createClass)* or `MyComponent.defaultProps` *(ES6 class)*
+      3. `getInitialState()` *(React.createClass)* or `this.state = ...` *(ES6 constructor)*
+      4. `componentWillMount()`
+      5. `render()`
+
+      ---
+
+      # `render()`
+
+      ```javascript
+      import React from 'react';
+
+      class Cowboy extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { isDead: false } ;
+        }
+        kill() {
+          this.setState({ isDead: true });
+          this.state.isDead; // false
+        }
+        render() {
+          return (
+            <div>
+              {this.state.isDead ? 
+                  "(RIP)" : 
+                  <button onClick={() => { this.kill()}}>Kill</button>}
+              { this.props.name } (weapon: { this.props.weapon })
+            </div>
+          );
+        }
+      }
+
+      Person.defaultProps = { name: 'Gringo', weapon: 'unknown' };
+
+      ```
+      #Context problem 
+
+      ```javascript
+      import React from 'react';
+
+      class Cowboy extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { isDead: false } ;
+        }
+        kill() {
+          this.setState({ isDead: true }); // Referece Error: can not get setState of undefined
+          this.state.isDead; // false
+        }
+        render() {
+          return (
+            <div>
+              {this.state.isDead ? 
+                  "(RIP)" : 
+                  <button onClick={this.kill}>Kill</button>}
+              { this.props.name } (weapon: { this.props.weapon })
+            </div>
+          );
+        }
+      }
+
+      Person.defaultProps = { name: 'Gringo', weapon: 'unknown' };
+
+      ```
+      ---
+
+      #Resolve context problem 
+      
+      1. Bind functions in constructor
+      ```javacript
+        constructor(props) {
+          super(props);
+          this.state = { isDead: false } ;
+
+          this.kill = this.kill.bind(this);
+        }
+      ```
+      2. Pass binded functions
+      ```
+         <button onClick={this.kill.bind(this)}>Kill</button>
+      ```
+
+      3. Use <a href="https://github.com/andreypopp/autobind-decorator">autobind</a> decorator on function decoration
+      ```javacript
+        @autobind
+        kill() {
+          this.setState({ isDead: true });
+          this.state.isDead; // false
+        }
+      ```
+
+      ---
+      #Birth / Mounting
+
+      1. Initialize / Construction
+      2. `getDefaultProps()` *(React.createClass)* or `MyComponent.defaultProps` *(ES6 class)*
+      3. `getInitialState()` *(React.createClass)* or `this.state = ...` *(ES6 constructor)*
+      4. `componentWillMount()`
+      5. `render()`
+      6. Children initialization & life cycle kickoff
+
+      ---
+
+      #Birth / Mounting
+
+      1. Initialize / Construction
+      2. `getDefaultProps()` *(React.createClass)* or `MyComponent.defaultProps` *(ES6 class)*
+      3. `getInitialState()` *(React.createClass)* or `this.state = ...` *(ES6 constructor)*
+      4. `componentWillMount()`
+      5. `render()`
+      6. Children initialization & life cycle kickoff
+      7. `componentDidMount()`
+
+      ---
+      class: middle, center
+      <img src="components-tree.png" style="width: 100%" />
+
+      ---
+
+      #Growth / Update
+
+      1. `componentWillReceiveProps()`
+      
+      ---
+
+      #Growth / Update
+
+      1. `componentWillReceiveProps()`
+      2. `shouldComponentUpdate()`
+
+      ---
+
+      #Growth / Update
+
+      1. `componentWillReceiveProps()`
+      2. `shouldComponentUpdate()`
+      
+      ---
+
+      #Growth / Update
+
+      1. `componentWillReceiveProps()`
+      2. `shouldComponentUpdate()`
+      3. `componentWillUpdate()`
+
+      ---
+
+      #Component will update every time when state or props changed
+
+      ###Default REACT implementation of `componentWillUpdate`:
+
+      ```
+      componentWillUpdate(newProps, nextState) {
+        const currentProps = this.props;
+        const currentState = this.state;
+        
+        return true;
+      }
+      ```
+
+      ---
+
+      #Growth / Update
+
+      1. `componentWillReceiveProps()`
+      2. `shouldComponentUpdate()`
+      3. `componentWillUpdate()`
+      4. `render()` (rerender)
+      
+      ---
+
+      #Growth / Update
+
+      1. `componentWillReceiveProps()`
+      2. `shouldComponentUpdate()`
+      3. `componentWillUpdate()`
+      4. `render()` (rerender)
+      5. Children Life cycle methods
+      
+      ---
+      class: middle, center
+
+        <img src="vdom.png">
+      ---
+
+      #Growth / Update
+
+      1. `componentWillReceiveProps()`
+      2. `shouldComponentUpdate()`
+      3. `componentWillUpdate()`
+      4. `render()` (rerender)
+      5. Children Life cycle methods
+      6. `componentDidUpdate()`
+      
+      ---
+
+      #Death / Unmount
+
+      1. `componentWillUnmount()`
+      2. Children Life cycle methods
+      3. Instance destroyed by Garbage Collector
+
+
+      ---
+
+      #JSX is not HTML
+
+      ####JSX code
+      ```html
+      <div> 
+        <h4> Header</h4>
+        <button>pess me</button>
+      </div>  
+      ```
+      ####transforms to JS code
+      ```javascript
+      React.createElement(
+            "div",
+            null,
+            React.createElement(
+              "h4",
+              null,
+              " Header"
+            ),
+            React.createElement(
+              "button",
+              null,
+              "pess me"
+            )
+          );
+        }
+      }]);
+      ```
+      ---
+
+      #Test react using <a href="https://facebook.github.io/jest/docs/tutorial-react.html#snapshot-testing">Jest</a>
+      ```javascript
+      // Link.react-test.js
+      import React from 'react';
+      import Link from '../Link.react';
+      import renderer from 'react-test-renderer';
+
+      test('Link changes the class when hovered', () => {
+        const component = renderer.create(
+          <Link page="http://www.facebook.com">Facebook</Link>
+        );
+        let tree = component.toJSON();
+        expect(tree).toMatchSnapshot();
+
+        // manually trigger the callback
+        tree.props.onMouseEnter();
+        // re-rendering
+        tree = component.toJSON();
+        expect(tree).toMatchSnapshot();
+
+        // manually trigger the callback
+        tree.props.onMouseLeave();
+        // re-rendering
+        tree = component.toJSON();
+        expect(tree).toMatchSnapshot();
+      });
+      ```
+
+      ---
+
+      # Jest creates shapshots
+      ```javascript
+      / __tests__/__snapshots__/Link.react-test.js.snap
+        exports[`Link changes the class when hovered 1`] = `
+        <a
+          className="normal"
+          href="http://www.facebook.com"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}>
+          Facebook
+        </a>
+        `;
+
+        exports[`Link changes the class when hovered 2`] = `
+        <a
+          className="hovered"
+          href="http://www.facebook.com"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}>
+          Facebook
+        </a>
+        `;
+
+        exports[`Link changes the class when hovered 3`] = `
+        <a
+          className="normal"
+          href="http://www.facebook.com"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}>
+          Facebook
+        </a>
+        `;
+      ```
+
+      ---
+      class: middle center
+      <img src="http://modny.spb.ru/sites/default/files/upload/1.04.14/durov-the-end-533a9cc1143e4.jpg">
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
